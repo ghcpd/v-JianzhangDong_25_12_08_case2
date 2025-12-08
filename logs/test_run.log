@@ -1,0 +1,21 @@
+2025-12-08T08:19:17.573927Z - Starting automated tests on Windows
+2025-12-08T08:19:17.574483Z - Running backup tests: python -u tests/test_runner.py backup
+2025-12-08T08:19:18.195420Z - BACKUP OUTPUT:
+Results for input_backup.py:
+  sql_injection: PASSED
+  file_read: PASSED
+  export_injection: PASSED
+ALL TESTS PASSED
+
+2025-12-08T08:19:18.196494Z - BACKUP TEST PASSED (exit=0)
+2025-12-08T08:19:18.197304Z - Running fixed tests: python -u tests/test_runner.py fixed
+2025-12-08T08:19:18.791474Z - FIXED OUTPUT:
+WARNING:inputs:AUTH_TOKEN not set; secure authentication may not be enforced in this environment
+Results for inputs.py:
+  sql_injection: PASSED
+  file_read: PASSED
+  export_injection: PASSED
+ALL TESTS PASSED
+
+2025-12-08T08:19:18.797268Z - FIXED TEST PASSED (exit=0)
+2025-12-08T08:19:18.798267Z - TEST PASSED

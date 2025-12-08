@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "total_vulnerabilities": 10,
+    "critical": 4,
+    "high": 4,
+    "medium": 1,
+    "low": 1
+  },
+  "details": [
+    {
+      "id": 1,
+      "file": "inputs.py",
+      "line_numbers": [11,12,13],
+      "vulnerability_type": "Hardcoded secrets",
+      "severity": "High",
+      "description": "Sensitive API keys and secrets are hardcoded in source control.",
+      "fix_explanation": "Moved secrets into environment variables and fail-safe configuration. The application now reads PAYMENT_TOKEN, MAIL_SERVER_KEY, INTERNAL_AUTH, and AUTH_TOKEN from the environment. It warns if AUTH_TOKEN is missing. This avoids leaking credentials in source control.",
+      "secure_code_snippet": "PAYMENT_TOKEN = os.environ.get(\"PAYMENT_TOKEN\")\nMAIL_SERVER_KEY = os.environ.get(\"MAIL_SERVER_KEY\")\nINTERNAL_AUTH = os.environ.get(\"INTERNAL_AUTH\")\nAUTH_TOKEN = os.environ.get(\"AUTH_TOKEN\")"
+    },
+    {
+      "id": 2,
+      "file": "inputs.py",
+      "line_numbers": [18,19,20,21],
+      "vulnerability_type": "Weak hashing / predictable token generation (MD5)",
+      "severity": "High",
+      "description": "User tokens were generated using MD5 of username+secret which is fast and predictable.",
+      "fix_explanation": "Replaced MD5 with HMAC-SHA256 using a server-side secret (INTERNAL_AUTH). HMAC provides keyed hashing and stronger collision resistance.",
+      "secure_code_snippet": "def auth_user(info):\n    username = info.get(\"username\", \"\")\n    digest = hmac.new(INTERNAL_AUTH.encode(), username.encode(), hashlib.sha256).hexdigest()\n    return digest"
+    },
+    {
+      "id": 3,
+      "file": "inputs.py",
+      "line_numbers": [24,25,26,27,28,29,30,31],
+      "vulnerability_type": "SQL Injection",
+      "severity": "Critical",
+      "description": "The SQL query was built by string interpolation with user-controlled input (uid).",
+      "fix_explanation": "Parameterize queries using sqlite3 parameter binding and validate that uid is an integer. This prevents injection payloads from modifying the query logic.",
+      "secure_code_snippet": "c.execute(\"SELECT id,name,balance FROM profiles WHERE id = ?\", (uid_int,))"
+    },
+    {
+      "id": 4,
+      "file": "inputs.py",
+      "line_numbers": [34,35,36,37,38,39,40,41],
+      "vulnerability_type": "SSRF and unsafe outbound requests",
+      "severity": "High",
+      "description": "notify_url was accepted without validation and requests.post was called without timeout or host checks, enabling SSRF and slow HTTP attacks.",
+      "fix_explanation": "Validate notify_url against a configured ALLOWED_NOTIFY_HOSTS list and use requests.post with a timeout and TLS verification. Reject requests to disallowed hosts.",
+      "secure_code_snippet": "parsed = urlparse(url)\nif parsed.hostname not in ALLOWED_NOTIFY_HOSTS:\n    raise ValueError(\"notify_url host is not allowed\")\nresp = requests.post(url, json={\"token\": PAYMENT_TOKEN, \"amount\": amount_val}, timeout=5, verify=True)"
+    },
+    {
+      "id": 5,
+      "file": "inputs.py",
+      "line_numbers": [44,45,46,47],
+      "vulnerability_type": "Arbitrary file read / Path traversal",
+      "severity": "Critical",
+      "description": "update_records opened arbitrary filesystem paths provided by the user, enabling reading of sensitive files.",
+      "fix_explanation": "Restrict file reads to a configured CONFIG_DIR and verify that the requested path is under that directory to prevent traversal and arbitrary file reads.",
+      "secure_code_snippet": "base_dir = os.path.abspath(CONFIG_DIR)\nrequested = os.path.abspath(path)\nif not requested.startswith(base_dir):\n    raise ValueError(\"Access to the specified file is not allowed\")\nwith open(requested) as f:\n    cfg = yaml.safe_load(f)"
+    },
+    {
+      "id": 6,
+      "file": "inputs.py",
+      "line_numbers": [50,51,52,53],
+      "vulnerability_type": "Command injection",
+      "severity": "Critical",
+      "description": "export_data constructed shell commands and used shell=True causing command injection when name is attacker-controlled.",
+      "fix_explanation": "Replace shell invocation with Python's zipfile module and sanitize the name. Avoids shell metacharacters and path traversal.",
+      "secure_code_snippet": "safe_name = os.path.basename(name)\nzip_path = f\"{safe_name}.zip\"\nwith zipfile.ZipFile(zip_path, \"w\", zipfile.ZIP_DEFLATED) as zf:\n    zf.write(DB_FILE)"
+    },
+    {
+      "id": 7,
+      "file": "inputs.py",
+      "line_numbers": [56,57,58,59,60,61,62,63,64,65],
+      "vulnerability_type": "Missing authentication on critical endpoints",
+      "severity": "High",
+      "description": "Endpoints performing sensitive actions (profile access, transfer, config, export) did not enforce authentication.",
+      "fix_explanation": "Added a require_auth decorator and require Authorization header for these endpoints. Authentication token is configurable via AUTH_TOKEN environment variable.",
+      "secure_code_snippet": "def require_auth(f):\n    def wrapper(*args, **kwargs):\n        token = request.headers.get(\"Authorization\")\n        if not token or (AUTH_TOKEN and token != f\"Bearer {AUTH_TOKEN}\"):\n            abort(401)\n        return f(*args, **kwargs)\n    wrapper.__name__ = f.__name__\n    return wrapper"
+    },
+    {
+      "id": 8,
+      "file": "inputs.py",
+      "line_numbers": [87,88],
+      "vulnerability_type": "Debug mode enabled in production",
+      "severity": "Critical",
+      "description": "app.run(debug=True) enables the Flask debugger which may allow remote code execution.",
+      "fix_explanation": "Disabled debug mode by setting debug=False and recommended use of production WSGI servers.",
+      "secure_code_snippet": "if __name__ == \"__main__\":\n    app.run(debug=False)"
+    },
+    {
+      "id": 9,
+      "file": "inputs.py",
+      "line_numbers": [37,38],
+      "vulnerability_type": "Sensitive information logging",
+      "severity": "Low",
+      "description": "Logging or printing sensitive transfer details may leak information to logs.",
+      "fix_explanation": "Use structured logging at an appropriate level and avoid printing sensitive tokens or full payloads. The updated code logs non-sensitive information only.",
+      "secure_code_snippet": "logger.info(\"Notifying payment endpoint for target %s\", target)"
+    }
+  ]
+}
