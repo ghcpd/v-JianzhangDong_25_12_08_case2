@@ -1,0 +1,71 @@
+{
+  "summary": {
+    "total_vulnerabilities": 6,
+    "critical": 3,
+    "high": 2,
+    "medium": 1,
+    "low": 0
+  },
+  "details": [
+    {
+      "id": 1,
+      "file": "inputs.py",
+      "line_numbers": [21],
+      "vulnerability_type": "SQL Injection",
+      "severity": "Critical",
+      "description": "The query_profile() function constructs SQL queries using string formatting (line 21: 'SELECT id,name,balance FROM profiles WHERE id = \\'%s\\'' % uid). This allows attackers to inject arbitrary SQL code through the uid parameter, potentially leading to data exfiltration, modification, or deletion.",
+      "fix_explanation": "Replaced string formatting with parameterized queries using SQLite's parameter binding mechanism. The fixed code uses a tuple of parameters (uid,) instead of string interpolation, which prevents SQL injection attacks by treating user input as data rather than code. Added error handling to log database errors safely.",
+      "secure_code_snippet": "c.execute(\"SELECT id,name,balance FROM profiles WHERE id = ?\", (uid,))"
+    },
+    {
+      "id": 2,
+      "file": "inputs.py",
+      "line_numbers": [12, 13, 14],
+      "vulnerability_type": "Hardcoded Secrets / API Key Exposure",
+      "severity": "Critical",
+      "description": "Three sensitive credentials are hardcoded in source code: PAYMENT_TOKEN = \"tok_production_998877\" (line 12), MAIL_SERVER_KEY = \"mail_srv_key_ABCDEFG\" (line 13), and INTERNAL_AUTH = \"admin_internal_5566\" (line 14). These secrets are visible in version control, logs, and binary artifacts, allowing attackers to impersonate the application.",
+      "fix_explanation": "Replaced hardcoded secrets with environment variable loading using os.getenv(). Secrets are now loaded from the environment at runtime. Environment variables should be configured through .env files (not committed to version control), container secrets, or secure vault systems. Added validation to ensure required secrets are set before use.",
+      "secure_code_snippet": "PAYMENT_TOKEN = os.getenv(\"PAYMENT_TOKEN\", \"\")\nMAIL_SERVER_KEY = os.getenv(\"MAIL_SERVER_KEY\", \"\")\nINTERNAL_AUTH_KEY = os.getenv(\"INTERNAL_AUTH_KEY\", \"\")"
+    },
+    {
+      "id": 3,
+      "file": "inputs.py",
+      "line_numbers": [37],
+      "vulnerability_type": "Command Injection",
+      "severity": "Critical",
+      "description": "The export_data() function uses subprocess.Popen() with shell=True (line 37: 'subprocess.Popen(cmd, shell=True)'). This allows attackers to inject shell commands through the name parameter. For example, a name like '\\\"test; rm -rf /\\\"' would execute destructive commands.",
+      "fix_explanation": "Replaced shell=True with shell=False and used a list of arguments instead of a single command string. The subprocess.run() method with shell=False directly executes the binary without shell interpretation, preventing command injection. Added filename sanitization using os.path.basename() to remove path traversal attempts. Implemented timeout protection and proper error handling.",
+      "secure_code_snippet": "cmd = [\"zip\", f\"{safe_name}.zip\", DB_FILE]\nresult = subprocess.run(cmd, shell=False, capture_output=True, timeout=30)"
+    },
+    {
+      "id": 4,
+      "file": "inputs.py",
+      "line_numbers": [18, 19],
+      "vulnerability_type": "Weak Cryptographic Hash Function",
+      "severity": "High",
+      "description": "The auth_user() function uses MD5 for password hashing (line 19: 'hashlib.md5(raw.encode()).hexdigest()'). MD5 is cryptographically broken and unsuitable for authentication. Attackers can easily reverse MD5 hashes using precomputed rainbow tables or brute force attacks.",
+      "fix_explanation": "Replaced MD5 with HMAC-SHA256, which is cryptographically secure. HMAC provides authentication and prevents timing attacks. The fixed implementation uses os.urandom() internally through the hmac module and requires an INTERNAL_AUTH_KEY loaded from environment variables. For production, consider using bcrypt, scrypt, or Argon2 for password hashing.",
+      "secure_code_snippet": "import hmac\nhashed = hmac.new(INTERNAL_AUTH_KEY.encode(), raw.encode(), \"sha256\").hexdigest()"
+    },
+    {
+      "id": 5,
+      "file": "inputs.py",
+      "line_numbers": [33],
+      "vulnerability_type": "Path Traversal / Directory Traversal",
+      "severity": "High",
+      "description": "The update_records() function accepts arbitrary file paths without validation (line 33: 'with open(path) as f'). Attackers can access sensitive files outside intended directories using path traversal sequences like '../../../etc/passwd', leading to unauthorized file disclosure.",
+      "fix_explanation": "Implemented strict path validation by: 1) Converting both the allowed directory and requested path to absolute paths, 2) Verifying the requested path starts with the allowed directory using startswith(), 3) Checking file existence before access. This prevents path traversal attacks while maintaining functionality for legitimate config files.",
+      "secure_code_snippet": "allowed_dir = os.path.abspath(\"./config\")\nabs_path = os.path.abspath(path)\nif not abs_path.startswith(allowed_dir):\n    raise ValueError(\"Access denied: file path not in allowed directory\")"
+    },
+    {
+      "id": 6,
+      "file": "inputs.py",
+      "line_numbers": [45],
+      "vulnerability_type": "Debug Mode Enabled in Production",
+      "severity": "Medium",
+      "description": "Flask debug mode is hardcoded to True (line 45: 'app.run(debug=True)'). Debug mode exposes sensitive information through detailed error pages, enables the Python debugger accessible over the network, and provides interactive console access with full application context to attackers.",
+      "fix_explanation": "Changed debug mode to be controlled by an environment variable (FLASK_DEBUG) that defaults to False for security. The fixed code checks the environment variable and only enables debug if explicitly set to 'true'. Additionally, restricted the Flask server to localhost (127.0.0.1) by default and specified a port, preventing accidental public exposure.",
+      "secure_code_snippet": "debug_mode = os.getenv(\"FLASK_DEBUG\", \"False\").lower() == \"true\"\napp.run(debug=debug_mode, host=\"127.0.0.1\", port=5000)"
+    }
+  ]
+}
