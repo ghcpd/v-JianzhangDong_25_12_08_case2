@@ -1,0 +1,27 @@
+[2025-12-08T08:21:54.622459Z] Auto test started on Windows
+[2025-12-08T08:21:54.623104Z] START cmd /c run_test.bat
+[2025-12-08T08:23:47.762957Z] Auto test started on Windows
+[2025-12-08T08:23:47.763680Z] START cmd /c run_test.bat
+[2025-12-08T08:28:53.781651Z] Auto test started on Windows
+[2025-12-08T08:28:53.782378Z] START cmd /c run_test.bat
+[2025-12-08T08:30:54.846748Z] inputs_backup.py START_OK
+[2025-12-08T08:30:56.854986Z] inputs.py START_OK
+[2025-12-08T08:30:56.855780Z] TEST PASSED
+[2025-12-08T08:34:36.904212Z] Starting vulnerable server tests
+[2025-12-08T08:34:39.237036Z] vulnerable_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:34:39.242723Z] Starting patched server tests
+[2025-12-08T08:34:41.560311Z] patched_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:34:41.560778Z] summary: {'vuln_hash_md5': True, 'patched_hash_sha256': False, 'vulnerable_to_sqli': False, 'patched_resists_sqli': True, 'vuln_ssrf_sent': True, 'patched_ssrf_blocked': False, 'vuln_path_traversal': True, 'patched_blocks_path_traversal': False, 'vuln_export_accepts_invalid': True, 'patched_export_blocks': False}
+[2025-12-08T08:34:41.561099Z] FINAL_TEST_RESULT: FAILED
+[2025-12-08T08:35:33.791654Z] Starting vulnerable server tests
+[2025-12-08T08:35:36.152846Z] vulnerable_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:35:36.153364Z] Starting patched server tests
+[2025-12-08T08:35:38.493319Z] patched_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:35:38.493957Z] summary: {'vuln_hash_md5': True, 'patched_hash_sha256': False, 'vulnerable_to_sqli': False, 'patched_resists_sqli': True, 'vuln_ssrf_sent': True, 'patched_ssrf_blocked': False, 'vuln_path_traversal': True, 'patched_blocks_path_traversal': False, 'vuln_export_accepts_invalid': True, 'patched_export_blocks': False}
+[2025-12-08T08:35:38.494309Z] FINAL_TEST_RESULT: FAILED
+[2025-12-08T08:36:51.009287Z] Starting vulnerable server tests
+[2025-12-08T08:36:53.346280Z] vulnerable_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:36:53.347098Z] Starting patched server tests
+[2025-12-08T08:36:55.678319Z] patched_results: {'token': '8a3a0675f2736f4b8ed1e29810c133d9', 'sqli_resp': None, 'sqli_status': 500, 'mock_received': '{"token": "tok_production_998877", "amount": 10}', 'transfer_status': 200, 'config_status': 200, 'config_resp': {'ok': True}, 'export_status': 200, 'export_resp': {'ok': 1}}
+[2025-12-08T08:36:55.678788Z] summary: {'vuln_hash_md5': True, 'patched_hash_sha256': False, 'vulnerable_to_sqli': False, 'patched_resists_sqli': True, 'vuln_ssrf_sent': True, 'patched_ssrf_blocked': False, 'vuln_path_traversal': True, 'patched_blocks_path_traversal': False, 'vuln_export_accepts_invalid': True, 'patched_export_blocks': False}
+[2025-12-08T08:36:55.679186Z] FINAL_TEST_RESULT: FAILED

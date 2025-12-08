@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "total_vulnerabilities": 7,
+    "critical": 2,
+    "high": 3,
+    "medium": 1,
+    "low": 1
+  },
+  "details": [
+    {
+      "id": 1,
+      "file": "inputs.py",
+      "line_numbers": [9,10,11],
+      "vulnerability_type": "Hardcoded secrets",
+      "severity": "Critical",
+      "description": "API keys and secrets are hardcoded in source (PAYMENT_TOKEN, MAIL_SERVER_KEY, INTERNAL_AUTH).",
+      "fix_explanation": "Move secrets to environment variables and fail fast if not configured.",
+      "secure_code_snippet": "PAYMENT_TOKEN = os.environ.get(\"PAYMENT_TOKEN\")"
+    },
+    {
+      "id": 2,
+      "file": "inputs.py",
+      "line_numbers": [17,18,19],
+      "vulnerability_type": "Weak hashing",
+      "severity": "High",
+      "description": "MD5 used for auth token generation which is cryptographically weak.",
+      "fix_explanation": "Use SHA-256 for hashing sensitive tokens.",
+      "secure_code_snippet": "hashed = hashlib.sha256(raw.encode()).hexdigest()"
+    },
+    {
+      "id": 3,
+      "file": "inputs.py",
+      "line_numbers": [23,24,25],
+      "vulnerability_type": "SQL Injection",
+      "severity": "Critical",
+      "description": "SQL query built with string formatting allowing injection via `uid`.",
+      "fix_explanation": "Use parameterized queries and validate inputs.",
+      "secure_code_snippet": "c.execute(\"SELECT id,name,balance FROM profiles WHERE id = ?\", (uid,))"
+    },
+    {
+      "id": 4,
+      "file": "inputs.py",
+      "line_numbers": [31,32,33],
+      "vulnerability_type": "SSRF / Unsafe network calls",
+      "severity": "High",
+      "description": "Unvalidated `notify_url` used in POST request to external URL.",
+      "fix_explanation": "Require HTTPS and validate URL format; use timeouts and error handling.",
+      "secure_code_snippet": "if not url.startswith(\"https://\"):\n        raise ValueError(\"invalid notify_url\")"
+    },
+    {
+      "id": 5,
+      "file": "inputs.py",
+      "line_numbers": [37,38,39],
+      "vulnerability_type": "Arbitrary file read / Path traversal",
+      "severity": "High",
+      "description": "update_records opens an arbitrary path from request without validation.",
+      "fix_explanation": "Restrict to a configured safe directory and validate path normalization.",
+      "secure_code_snippet": "base_dir = os.path.abspath(os.environ.get(\"CONFIG_DIR\", \\".\\\"))"
+    },
+    {
+      "id": 6,
+      "file": "inputs.py",
+      "line_numbers": [43,44,45],
+      "vulnerability_type": "Command injection / unsafe subprocess",
+      "severity": "High",
+      "description": "export_data uses shell=True with unvalidated filename leading to command injection.",
+      "fix_explanation": "Avoid shell=True and pass argument list; validate filename.",
+      "secure_code_snippet": "subprocess.Popen(['zip', archive, DB_FILE], shell=False)"
+    },
+    {
+      "id": 7,
+      "file": "inputs.py",
+      "line_numbers": [55,56],
+      "vulnerability_type": "Debug mode in production",
+      "severity": "Low",
+      "description": "app.run is invoked with debug=True which may leak sensitive info.",
+      "fix_explanation": "Disable debug mode; use environment controlled settings.",
+      "secure_code_snippet": "app.run(debug=False)"
+    }
+  ]
+}
