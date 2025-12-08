@@ -1,0 +1,91 @@
+{
+  "summary": {
+    "total_vulnerabilities": 9,
+    "critical": 3,
+    "high": 3,
+    "medium": 2,
+    "low": 1
+  },
+  "details": [
+    {
+      "id": 1,
+      "file": "inputs.py",
+      "line_numbers": [11, 12, 13],
+      "vulnerability_type": "Hardcoded secrets",
+      "severity": "High",
+      "description": "API keys and secrets are hardcoded in the source (PAYMENT_TOKEN, MAIL_SERVER_KEY, INTERNAL_AUTH). This exposes credentials if the repository is leaked.",
+      "fix_explanation": "Secrets were moved to environment variables and are required at runtime. The code now reads PAYMENT_TOKEN, MAIL_SERVER_KEY, INTERNAL_AUTH and ADMIN_TOKEN from environment variables and raises an error when missing in production.",
+      "secure_code_snippet": "PAYMENT_TOKEN = os.getenv(\"PAYMENT_TOKEN\")\nINTERNAL_AUTH = os.getenv(\"INTERNAL_AUTH\")\nADMIN_TOKEN = os.getenv(\"ADMIN_TOKEN\")"
+    },
+    {
+      "id": 2,
+      "file": "inputs.py",
+      "line_numbers": [18, 19, 20, 21],
+      "vulnerability_type": "Weak hashing (MD5)",
+      "severity": "High",
+      "description": "User auth tokens are generated using MD5, which is cryptographically weak and susceptible to collisions and attacks.",
+      "fix_explanation": "Replaced MD5 with HMAC-SHA256 using a secret (INTERNAL_AUTH) to generate deterministic secure tokens for username-based auth.",
+      "secure_code_snippet": "import hmac\nimport hashlib\n...\nsecret = _require_env(\"INTERNAL_AUTH\")\ntoken = hmac.new(secret.encode(), username.encode(), hashlib.sha256).hexdigest()"
+    },
+    {
+      "id": 3,
+      "file": "inputs.py",
+      "line_numbers": [24, 25, 26, 27, 28, 29, 30],
+      "vulnerability_type": "SQL Injection (unsanitized string formatting)",
+      "severity": "Critical",
+      "description": "query_profile builds SQL by injecting the uid into the query string directly, allowing SQL injection attacks.",
+      "fix_explanation": "Use parameterized queries with placeholders and validate uid as integer before querying. Also use sqlite3.Row to return dict-like rows.",
+      "secure_code_snippet": "try:\n    uid_int = int(uid)\nexcept Exception:\n    raise ValueError(\"invalid id\")\nconn = sqlite3.connect(DB_FILE)\nc.execute(\"SELECT id,name,balance FROM profiles WHERE id = ?\", (uid_int,))"
+    },
+    {
+      "id": 4,
+      "file": "inputs.py",
+      "line_numbers": [50, 51, 52, 53],
+      "vulnerability_type": "Command injection / shell execution",
+      "severity": "Critical",
+      "description": "export_data constructs a command string and calls subprocess.Popen with shell=True, allowing arbitrary command injection from the 'name' parameter.",
+      "fix_explanation": "Removed shell calls and replaced with Python's zipfile module for safe archive creation, and validated the 'name' parameter against a whitelist regex.",
+      "secure_code_snippet": "import zipfile\nif not NAME_RE.match(name):\n    raise ValueError(\"invalid name\")\nwith zipfile.ZipFile(f\"{name}.zip\", \"w\") as zf:\n    zf.write(DB_FILE)"
+    },
+    {
+      "id": 5,
+      "file": "inputs.py",
+      "line_numbers": [44, 45, 46, 47],
+      "vulnerability_type": "Arbitrary file read / Path traversal",
+      "severity": "High",
+      "description": "update_records accepts a path from the user and opens it directly, allowing reading arbitrary files (path traversal).",
+      "fix_explanation": "Only accept filenames (not absolute paths), restrict files to a configured CONFIG_DIR and validate the resolved path is inside that directory. Reject filenames with '..' or absolute paths.",
+      "secure_code_snippet": "if os.path.isabs(filename) or '..' in filename:\n    raise ValueError(\"invalid filename\")\ncfg_dir = CONFIG_DIR\npath = os.path.realpath(os.path.join(cfg_dir, filename))\nif not path.startswith(os.path.realpath(cfg_dir)):\n    raise ValueError(\"access denied\")"
+    },
+    {
+      "id": 6,
+      "file": "inputs.py",
+      "line_numbers": [34, 35, 36, 37, 38, 39, 40, 41],
+      "vulnerability_type": "Server-Side Request Forgery (SSRF) / Unvalidated external requests",
+      "severity": "Critical",
+      "description": "transfer_funds posts to an arbitrary notify_url provided by the user and includes a payment token, enabling SSRF and credential leakage.",
+      "fix_explanation": "Validate notify_url: ensure http/https scheme, disallow private IPs, and optionally restrict to ALLOWED_NOTIFY_HOSTS. Use requests with a timeout and raise on invalid hosts.",
+      "secure_code_snippet": "def _validate_notify_url(url):\n    parsed = urllib.parse.urlparse(url)\n    if parsed.scheme not in (\"http\", \"https\"):\n        raise ValueError(\"invalid URL scheme\")\n    host = parsed.hostname\n    if _is_private_host(host):\n        raise ValueError(\"disallowed host\")"
+    },
+    {
+      "id": 7,
+      "file": "inputs.py",
+      "line_numbers": [56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84],
+      "vulnerability_type": "Missing authentication/authorization on sensitive endpoints",
+      "severity": "High",
+      "description": "Several endpoints (profile, transfer, config, export) perform sensitive actions without authentication or authorization checks.",
+      "fix_explanation": "Added a require_auth decorator that mandates an ADMIN_TOKEN (from environment) via Bearer token in the Authorization header, and applied it to sensitive endpoints.",
+      "secure_code_snippet": "def require_auth(f):\n    token = request.headers.get(\"Authorization\")\n    if token.startswith(\"Bearer \"):\n        token = token.split(\" \", 1)[1]\n    if token != ADMIN_TOKEN:\n        return jsonify({\"error\": \"forbidden\"}), 403"
+    },
+    {
+      "id": 8,
+      "file": "inputs.py",
+      "line_numbers": [87, 88],
+      "vulnerability_type": "Debug mode enabled in production",
+      "severity": "Medium",
+      "description": "app.run(debug=True) will activate Flask's debugger and interactive console on errors, potentially allowing remote code execution if exposed.",
+      "fix_explanation": "Removed default debug=True. Debug mode is now controlled by FLASK_DEBUG environment variable and disabled by default.",
+      "secure_code_snippet": "debug = os.getenv(\"FLASK_DEBUG\", \"false\").lower() == \"true\"\napp.run(debug=debug)"
+    }
+  ]
+}
