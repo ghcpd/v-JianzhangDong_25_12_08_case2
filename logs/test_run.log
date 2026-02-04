@@ -1,0 +1,25 @@
+[2025-12-08T08:20:13.762714Z] Starting automated tests
+[2025-12-08T08:20:13.762754Z] Running tests for input_backup.py
+SQL injection: FAIL - returned multiple rows (SQL injection vulnerable)
+Path traversal (update_records): PASS - blocked traversal: [Errno 2] No such file or directory: '../secret.txt'
+Export safety (zip): FAIL - zip file not created
+transfer:acct:10
+SSRF (transfer): FAIL - did not block SSRF (allowed private IP)
+Auth hash strength: FAIL - weak hashing (MD5 or similar)
+4 tests failed
+
+'zip' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+
+[2025-12-08T08:20:14.579055Z] Exit code: 1
+[2025-12-08T08:20:14.579072Z] Running tests for inputs.py
+SQL injection: PASS - rejected invalid id
+Path traversal (update_records): PASS - blocked traversal: invalid filename
+Export safety (zip): PASS - export ok
+SSRF (transfer): PASS - blocked SSRF: disallowed host
+Auth hash strength: PASS - uses strong hash
+All tests passed
+
+
+[2025-12-08T08:20:15.377012Z] Exit code: 0
+[2025-12-08T08:20:15.377024Z] TEST PASSED
