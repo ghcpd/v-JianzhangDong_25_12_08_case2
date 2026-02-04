@@ -1,0 +1,189 @@
+[2025-12-08T07:28:44.356348Z] Starting test for: input_backup.py
+[2025-12-08T07:28:44.561127Z] OUTPUT for input_backup.py:
+{
+  "file": "input_backup.py",
+  "issues": [
+    {
+      "id": 1,
+      "name": "hardcoded_payment_token",
+      "line": -1
+    },
+    {
+      "id": 2,
+      "name": "hardcoded_mail_key",
+      "line": -1
+    },
+    {
+      "id": 3,
+      "name": "hardcoded_internal_auth",
+      "line": -1
+    },
+    {
+      "id": 10,
+      "name": "possible_sql_injection",
+      "line": -1
+    },
+    {
+      "id": 11,
+      "name": "md5_hashing_detected",
+      "line": -1
+    },
+    {
+      "id": 20,
+      "name": "shell_true_in_subprocess",
+      "line": -1
+    },
+    {
+      "id": 30,
+      "name": "file_read_from_user_input",
+      "line": -1
+    },
+    {
+      "id": 40,
+      "name": "debug_mode_enabled",
+      "line": -1
+    },
+    {
+      "id": 50,
+      "name": "possible_ssrf",
+      "line": -1
+    }
+  ]
+}
+[2025-12-08T07:28:44.561127Z] RESULT for input_backup.py: FAIL (exit code 1)
+[2025-12-08T07:28:44.562031Z] Starting test for: inputs.py
+[2025-12-08T07:28:44.693536Z] OUTPUT for inputs.py:
+{
+  "file": "inputs.py",
+  "issues": [
+    {
+      "id": 50,
+      "name": "possible_ssrf",
+      "line": -1
+    }
+  ]
+}
+[2025-12-08T07:28:44.693536Z] RESULT for inputs.py: FAIL (exit code 1)
+[2025-12-08T07:28:44.694405Z] FINAL STATUS: TEST FAILED
+[2025-12-08T07:29:39.320717Z] Starting test for: input_backup.py
+[2025-12-08T07:29:39.501791Z] OUTPUT for input_backup.py:
+{
+  "file": "input_backup.py",
+  "issues": [
+    {
+      "id": 1,
+      "name": "hardcoded_payment_token",
+      "line": -1
+    },
+    {
+      "id": 2,
+      "name": "hardcoded_mail_key",
+      "line": -1
+    },
+    {
+      "id": 3,
+      "name": "hardcoded_internal_auth",
+      "line": -1
+    },
+    {
+      "id": 10,
+      "name": "possible_sql_injection",
+      "line": -1
+    },
+    {
+      "id": 11,
+      "name": "md5_hashing_detected",
+      "line": -1
+    },
+    {
+      "id": 20,
+      "name": "shell_true_in_subprocess",
+      "line": -1
+    },
+    {
+      "id": 30,
+      "name": "file_read_from_user_input",
+      "line": -1
+    },
+    {
+      "id": 40,
+      "name": "debug_mode_enabled",
+      "line": -1
+    },
+    {
+      "id": 50,
+      "name": "possible_ssrf",
+      "line": -1
+    }
+  ]
+}
+[2025-12-08T07:29:39.501791Z] RESULT for input_backup.py: FAIL (exit code 1)
+[2025-12-08T07:29:39.502980Z] Starting test for: inputs.py
+[2025-12-08T07:29:39.634187Z] OUTPUT for inputs.py:
+{
+  "file": "inputs.py",
+  "issues": []
+}
+[2025-12-08T07:29:39.634187Z] RESULT for inputs.py: PASS (exit code 0)
+[2025-12-08T07:29:39.635384Z] FINAL STATUS: TEST PASSED
+[2025-12-08T07:32:42.497411Z] Starting test for: input_backup.py
+[2025-12-08T07:32:42.670366Z] OUTPUT for input_backup.py:
+{
+  "file": "input_backup.py",
+  "issues": [
+    {
+      "id": 1,
+      "name": "hardcoded_payment_token",
+      "line": -1
+    },
+    {
+      "id": 2,
+      "name": "hardcoded_mail_key",
+      "line": -1
+    },
+    {
+      "id": 3,
+      "name": "hardcoded_internal_auth",
+      "line": -1
+    },
+    {
+      "id": 10,
+      "name": "possible_sql_injection",
+      "line": -1
+    },
+    {
+      "id": 11,
+      "name": "md5_hashing_detected",
+      "line": -1
+    },
+    {
+      "id": 20,
+      "name": "shell_true_in_subprocess",
+      "line": -1
+    },
+    {
+      "id": 30,
+      "name": "file_read_from_user_input",
+      "line": -1
+    },
+    {
+      "id": 40,
+      "name": "debug_mode_enabled",
+      "line": -1
+    },
+    {
+      "id": 50,
+      "name": "possible_ssrf",
+      "line": -1
+    }
+  ]
+}
+[2025-12-08T07:32:42.670366Z] RESULT for input_backup.py: FAIL (exit code 1)
+[2025-12-08T07:32:42.671823Z] Starting test for: inputs.py
+[2025-12-08T07:32:42.786564Z] OUTPUT for inputs.py:
+{
+  "file": "inputs.py",
+  "issues": []
+}
+[2025-12-08T07:32:42.786564Z] RESULT for inputs.py: PASS (exit code 0)
+[2025-12-08T07:32:42.787605Z] FINAL STATUS: TEST PASSED
